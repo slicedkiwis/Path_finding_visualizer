@@ -1,0 +1,96 @@
+// handling start and end nodes
+    /*
+    function startEndHandler(){
+    let cells = grid.getElementsByClassName("cell");
+    for(let i =0 ; i < cells.length;i++){
+      let cell = cells[i];
+      cell.addEventListener("dblclick",()=>{
+        if(!startNode.length  || !endNode.length){
+        if(nextCycle == "start"){
+          if(startNode.length){
+            for(let i = 0 ; i < maze.length;i++){
+              for(let j = 0; j < maze[i].length;j++){
+                let current = maze[i][j];
+                if(current.type = "start"){
+                  current.type = "empty";
+                  let curDiv = document.getElementById(current.id);
+                  curDiv.style.backgroundColor = colors[current.type];
+                };
+              }
+            }
+          }
+          startNode[0] = cell;
+          for(let row in maze){
+            for(let node in row){
+              let curNode = maze[row][node];  
+              if(curNode.id = startNode[0].id){
+                startNode[1] = curNode;
+              }
+            }
+          }
+          cell.style.backgroundColor = colors[nextCycle];
+          nextCycle = "end";
+        }else{
+          if(endNode.length){
+            for(let i = 0 ; i < maze.length;i++){
+              for(let j = 0; j < maze[i].length;j++){
+                let current = maze[i][j];
+                if(current.type = "end"){
+                  current.type = "empty";
+                  let curDiv = document.getElementById(current.id);
+                  curDiv.style.backgroundColor = colors[current.type];
+                };
+              }
+            }
+          }
+          endNode[0] = cell;
+          for(let row in maze-1){
+            for(let node in row-1){
+              let curNode = maze[row][node];  
+              if(curNode.id = endNode[0].id){
+                endNode[1] = endNode;
+              }
+            }
+          }
+          cell.style.backgroundColor = colors[nextCycle];
+          nextCycle = "start";
+        }
+      }else{
+        startNode =[]; 
+        endNode = [];
+        for(cell in cells){
+          let val = parseInt(cell);
+          if(Number.isInteger(val)){
+            let cur = cells[cell];
+            cur.style.backgroundColor = colors["empty"];
+          }
+        }
+            for(let i = 0 ; i < maze.length;i++){
+              for(let j = 0; j < maze[i].length;j++){
+                let current = maze[i][j];
+                current.type = "empty";
+            }
+          }
+      }
+      });
+    }
+    //handling the start and end Nodes
+  }
+    */
+
+
+     /*
+      console.log(startNode);
+     if(startNode){
+       if(endNode){
+        let start = cellDictionary[startNode.id];
+        let end = cellDictionary[endNode.id];
+        start.type = "empty";
+        end.type = "empty";
+       }else{
+        endNode = cellDictionary[cell.id];
+       }
+     }else{
+      startNode = cellDictionary[cell.id];
+      cell.style.backgroundColor = colors[cellDictionary[startNode.id].type];
+     }
