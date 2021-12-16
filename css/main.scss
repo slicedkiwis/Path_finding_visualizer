@@ -4,7 +4,7 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 body {
-  background-color: darkgrey;
+  background-color: white;
 }
 .algorithmSelector{
     min-height: 5vh; 
@@ -54,6 +54,6 @@ body {
 .cell {
   min-height: 2vh;
   min-width: 1vw;
-  border: solid 0.01vh black;
+  border: solid 0.01vh #BDEDE0;
   background-color: white;
 }

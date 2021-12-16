@@ -5,7 +5,7 @@
 }
 
 body {
-  background-color: darkgrey;
+  background-color: white;
 }
 
 .algorithmSelector {
@@ -89,7 +89,7 @@ body {
 .cell {
   min-height: 2vh;
   min-width: 1vw;
-  border: solid 0.01vh black;
+  border: solid 0.01vh #BDEDE0;
   background-color: white;
 }
 /*# sourceMappingURL=main.css.map */

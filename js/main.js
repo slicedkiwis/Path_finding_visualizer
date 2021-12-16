@@ -1,14 +1,15 @@
 (function (window, document, undefined) {
+  let borderColor = "#BDEDE0";
   const colors = {
     empty: "white",
-    visited: "cyan",
+    visited:"#89CFF0",//"#ADD8E6",
     weighted: "brown",
-    wall: "black",
-    start:"green",
-    end : "red",
+    wall: "#262730",
+    start:"#45CB85",
+    end : "#C65B7C",
     path :"orange"
   };
-  const cellTypes = ["empty", "weighted", "wall"];
+  const cellTypes = ["empty", "wall"];
   let currentType = "wall";
   let currentAlgo = null;
   let divDictionary ={};  
@@ -84,6 +85,7 @@
       Array.from(grid.getElementsByClassName("cell")).forEach((node)=>{
         cellDictionary[node.id].type = "empty"; 
         node.style.backgroundColor = colors[cellDictionary[node.id].type];
+        node.style.border = "solid 0.01vh #BDEDE0";
       });
     }
     //handling input
@@ -95,7 +97,8 @@
           cellDiv.onmouseover = () =>{
             let cell = cellDictionary[cellDiv.id];
             cell.type = currentType;
-            cellDiv.style.backgroundColor =colors[cell.type]; 
+            cellDiv.style.backgroundColor =colors[cell.type];
+            if(cell.type != "empty")cellDiv.style.border= `solid 0.01vh ${colors[cell.type]}`;
           }
         });
       })
@@ -110,7 +113,7 @@
     window.addEventListener("keydown",(e) => {
        let val = parseInt(e.key);
        if (typeof val === "number" && !isNaN(val)) {
-          currentType =  cellTypes[val - 1];
+          currentType =  cellTypes[val%cellTypes.length];
        }
       if(e.key == 'c'){
         clear();
@@ -138,17 +141,23 @@
         end.type = "empty";
         divDictionary[startNode.id].style.backgroundColor = colors[startNode.type];
         divDictionary[endNode.id].style.backgroundColor = colors[endNode.type];
+        divDictionary[endNode.id].style.border = `solid 0.1vh ${borderColor}`;
+        divDictionary[startNode.id].style.border = `solid 0.1vh ${borderColor}`;
         startNode = null; 
         endNode = null;
        }else{
         endNode = cellDictionary[cell.id];
-        cell.style.backgroundColor = "red";
+        cell.style.backgroundColor = colors["end"];
         cellDictionary[endNode.id].type = "end";
+        cell.style.border = "none";
+        divDictionary[endNode.id].style.border = `solid 0.1vh ${divDictionary[endNode.id].style.backgroundColor = colors[endNode.type]}`;
        }
      }else{
       startNode = cellDictionary[cell.id];
       cellDictionary[startNode.id].type = "start";
-      cell.style.backgroundColor = "green"; 
+      cell.style.backgroundColor = colors["start"]; 
+      cell.style.border = "none";
+      divDictionary[startNode.id].style.border = `solid 0.1vh ${divDictionary[startNode.id].style.backgroundColor = colors[startNode.type]}`;
      }
     })
   }); 
@@ -162,7 +171,7 @@
       });    
     } 
     async function animate(startNode,currentAlgo){
-      let animator = new algoAnimator(divDictionary,colors,targetReached);
+      let animator = new algoAnimator(divDictionary,colors,targetReached,borderColor);
       if(currentAlgo == "depthFirstSearch"){
         let path = await animator.animateDfs(startNode);
         console.log(path);

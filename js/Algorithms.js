@@ -1,8 +1,9 @@
 class algoAnimator {
-  constructor(divDictionary, colors, targetReached) {
+  constructor(divDictionary, colors, targetReached,borderColor) {
     this.targetReached = targetReached;
     this.divDictionary = divDictionary;
     this.colors = colors;
+    this.borderColor = borderColor;
   }
   async sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -10,6 +11,8 @@ class algoAnimator {
   async update(cell,time) {
     let cellDiv = this.divDictionary[cell.id];
     cellDiv.style.backgroundColor = this.colors[cell.type];
+    if(cell.type != "empty")cellDiv.style.border =  `solid 0.01vh #CEFDFF`;
+    else  cellDiv.style.border =  `solid 0.01vh ${this.borderColor}`;
     await this.sleep(time);
   }
   async animateDfs(cell) {
