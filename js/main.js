@@ -1,7 +1,7 @@
 (function (window, document, undefined) {
   let borderColor = "#BDEDE0";
   const colors = {
-    empty: "white",
+    empty: "#FFFFFF",
     visited: "#89CFF0", //"#ADD8E6",
     weighted: "brown",
     wall: "#262730",
@@ -10,6 +10,10 @@
     path: "orange",
   };
   const cellTypes = ["empty", "wall"];
+  const WIDTH_RATIO = 20//89
+  ;
+  const HEIGHT_RATIO = 20//42
+  ;
   let currentType = "wall";
   let currentAlgo = null;
   let divDictionary = {};
@@ -21,11 +25,11 @@
     let maze = []; //node array containing node objects
     let grid = document.getElementById("grid"); // grid containing divs
     let counter = 0;
-    for (let i = 0; i < height; i += height / 42) {
+    for (let i = 0; i < height; i += height / HEIGHT_RATIO) {
       let mazeRow = []; //node object row
       let row = document.createElement("div");
       row.className = "gridRow";
-      for (let j = 0; j < width; j += width / 89) {
+      for (let j = 0; j < width; j += width / WIDTH_RATIO) {
         let id = "cell" + counter;
         let cellDiv = document.createElement("div");
         cellDiv.className = "cell";
@@ -204,11 +208,11 @@
       );
       if (currentAlgo == "depthFirstSearch") {
         let path = await animator.animateDfs(startNode);
-        console.log(path);
       } else if (currentAlgo == "breadthFirstSearch") {
         animator.animateBfs([startNode]);
       } else if (currentAlgo == "aStar") {
       } else if (currentAlgo == "dijkstra's") {
+        animator.animateDijkstra(nodeArray, startNode, endNode);
       }
       /*
       for(cell in path){
@@ -217,6 +221,8 @@
         animator.update(path[cell]);
       }*/
     }
+    //making maze
+    async function buildMaze(starNode, endNode) {}
     /// calling funcitons
     inputHandler();
     startEndHandler();
