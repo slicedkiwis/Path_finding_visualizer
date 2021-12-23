@@ -6,4 +6,7 @@ class cell {
     this.distance = Infinity;
     this.weight = 0;
   }
+   setLocation(location){
+      this.location = location;
+    }
 }

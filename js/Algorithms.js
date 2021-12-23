@@ -1,9 +1,10 @@
 class algoAnimator {
-  constructor(divDictionary, colors, targetReached, borderColor) {
+  constructor(divDictionary, nodeArray, colors, targetReached, borderColor) {
     this.targetReached = targetReached;
     this.divDictionary = divDictionary;
     this.colors = colors;
     this.borderColor = borderColor;
+    this.nodeArray = nodeArray;
   }
   async sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,7 +27,6 @@ class algoAnimator {
       cellDiv.style.border = `solid 0.01vh #CEFDFF`;
       cellDiv.style.backgroundColor = this.colors[cell.type];
     }
-
     await this.sleep(time);
   }
   async animateDfs(cell) {
@@ -79,34 +79,65 @@ class algoAnimator {
       console.log(e);
     }
   }
-  async animateBfs(queue) {
-    if (queue.length === 0 || this.targetReached) return;
-    let newQue = [];
-    while (queue.length > 0) {
-      let curCell = queue.shift();
-      for (Element in curCell.next) {
-        let cell = curCell.next[Element];
-        if (cell.type == "empty") {
-          newQue.push(cell);
-          cell.type = "visited";
-          await this.update(cell, 0.01);
-        } else if (cell.type == "end") {
-          this.targetReached = true;
-        }
+  async animateBfs(queue, start, end) {
+    let prev = [];
+    for (let i = 0; i < this.nodeArray.length; i++) {
+      let row = [];
+      for (let j = 0; j < this.nodeArray.length; j++) {
+        row.push([Infinity, Infinity]);
       }
+      prev.push(row);
     }
-    await this.animateBfs(newQue);
+    while (queue.length != 0 && !this.targetReached) {
+      let curCell = queue.shift();
+      curCell.type = "visited";
+      for (Element in curCell.next) {
+        let nextCell = curCell.next[Element];
+        if (nextCell.type === "visited" || nextCell.type === "wall") continue;
+        let i = nextCell.location[0];
+        let j = nextCell.location[1];
+        prev[i][j] = curCell.location;
+        if (nextCell.type === "end")this.targetReached = true;
+        queue.push(nextCell);
+        nextCell.type = "visited";
+      }
+      await this.update(curCell);
+    }
+    let path = [];
+    if (this.targetReached) {
+      let i = end.location[0];
+      let j = end.location[1];
+      while (i != start.location[0] || j != start.location[1]) {
+        path.push(this.nodeArray[i][j]);
+        let curLocation = prev[i][j];
+        i = curLocation[0];
+        j = curLocation[1];
+      }
+      path = path.reverse();
+    }
+    return path;
   }
   async animeAstar() {}
   // dijkstra's and helper methods
   async animateDijkstra(nodeArray, startNode, endNode) {
-    nodeArray = this.prepareDj(nodeArray, startNode, endNode);
-    this.animateDj([startNode]);
+    let path = [];
+    let prev = await this.animateDj([startNode]);
+    if (this.targetReached) {
+      let i = endNode.location[0];
+      let j = endNode.location[1];
+      while (i != startNode.location[0] || j != startNode.location[1]) {
+        path.push(this.nodeArray[i][j]);
+        let curLocation = prev[i][j];
+        i = curLocation[0];
+        j = curLocation[1];
+      }
+      path = path.reverse();
+    }
+    return path;
   }
   async animateDj(queue) {
-    //utility sort function
-    function sort(cell) {
-      cell.next.sort((a, b) => {
+    function sort(cells) {
+      cells.sort((a, b) => {
         let aDist = a.distance;
         let bDist = b.distance;
         if (aDist > bDist) return 1;
@@ -114,23 +145,39 @@ class algoAnimator {
         return 0;
       });
     }
-    while(queue.length) {
-      let newQueue = [];
+    let prev = [];
+    for (let i = 0; i < this.nodeArray.length; i++) {
+      let row = [];
+      for (let j = 0; j < this.nodeArray.length; j++) {
+        row.push([Infinity, Infinity]);
+      }
+      prev.push(row);
+    }
+    while (queue.length != 0) {
+      sort(queue);
       let curCell = queue.shift();
-      sort(curCell);
-      for(Element in curCell.next){
+      if (curCell.type === "end") {
+        this.targetReached = true;
+        curCell.type = "visited";
+        return prev;
+      }
+      curCell.type = "visited";
+      for (Element in curCell.next) {
         let nextCell = curCell.next[Element];
-        if(nextCell.type === "empty"){
-          newQueue.push(nextCell);
-          nextCell.type = "visited";
-          await this.update(nextCell);
+        if (nextCell.type === "visited" || nextCell.type === "wall") continue;
+        // preform relaxtion update distance to current node.
+        if (curCell.distance + 1 < nextCell.distance) {
+          nextCell.distance = curCell.distance + 1;
+          let i = nextCell.location[0];
+          let j = nextCell.location[1];
+          prev[i][j] = curCell.location;
+          queue.push(nextCell);
         }
       }
-      queue = newQueue;
-      console.log(queue);
+      await this.update(curCell);
     }
   }
-  async prepareDj(nodeArray, startNode, endNode) {
+  async prepareModDfs(nodeArray, startNode, endNode) {
     // idea is to make a distance map of the cells in relation to the start node
     // and one in relation to the endNode, then combine them taking the smallest value for each cell, and run animateDJ on that grid
     // deep clone of the grid

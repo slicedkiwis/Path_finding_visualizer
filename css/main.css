@@ -87,8 +87,8 @@ body {
 }
 
 .cell {
-  min-height: 2vh;
-  min-width: 1vw;
+  min-height: 3vh;
+  min-width: 1.5vw;
   border: solid 1px #BDEDE0;
   background-color: white;
 }
