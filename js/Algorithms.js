@@ -11,22 +11,41 @@ class algoAnimator {
   }
   async update(cell, time) {
     let cellDiv = this.divDictionary[cell.id];
-    if (cell.type == "empty")
-      cellDiv.style.border = `solid 0.01vh ${this.borderColor}`;
-    let red = Math.random() * 255;
-    let green = Math.random() * 255;
-    let blue = Math.random() * 255;
-    if (cell.type != "empty") {
-      let rgb = `rgb(${red},${green},${blue})`;
-      cellDiv.style.backgroundColor = rgb;
-      rgb = `rgb(${red},${green},${blue})`;
-      cellDiv.style.backgroundColor = rgb;
-      rgb = `rgb(${red},${green},${blue})`;
-      cellDiv.style.backgroundColor = rgb;
-      await this.sleep(0.01);
-      cellDiv.style.border = `solid 0.01vh #CEFDFF`;
-      cellDiv.style.backgroundColor = this.colors[cell.type];
-    }
+
+    let initialColor = "#62F9F4";
+    let interMediateColor = "#F9CFF2";
+    cellDiv.animate(
+      [
+        {
+          background: `${interMediateColor}`,
+          opacity: 1,
+          offset: 0.4,
+          border:`0.01vh solid ${this.colors[cell.type]}`
+        },
+        {
+          background: `${initialColor}`,
+          opacity: 0.4,
+          offset: 0.9,
+          border:`0.01vh solid ${this.colors[cell.type]}`
+        },
+        {
+          background: `${this.colors[cell.type]}`,
+          opacity: 1,
+          offset: 1,
+          border:`0.01vh solid ${this.colors[cell.type]}`
+        },
+      ],
+      {
+        duration: 200,
+        easing: "ease-in-out",
+        delay: 0.1,
+        iterations: 3,
+        direction: "alternate",
+      }
+    );
+
+    cellDiv.style.backgroundColor = this.colors[cell.type];
+    cellDiv.style.border = `1px solid ${this.borderColor}`;
     await this.sleep(time);
   }
   async animateDfs(cell) {
@@ -54,6 +73,7 @@ class algoAnimator {
     }
   }
   async modifiedDfs() {
+    this.prepareModDfs();
     let cell = queue.shift();
     try {
       if (cell.type == "end") {
@@ -97,7 +117,7 @@ class algoAnimator {
         let i = nextCell.location[0];
         let j = nextCell.location[1];
         prev[i][j] = curCell.location;
-        if (nextCell.type === "end")this.targetReached = true;
+        if (nextCell.type === "end") this.targetReached = true;
         queue.push(nextCell);
         nextCell.type = "visited";
       }
@@ -113,12 +133,9 @@ class algoAnimator {
         i = curLocation[0];
         j = curLocation[1];
       }
-      path = path.reverse();
     }
     return path;
   }
-  async animeAstar() {}
-  // dijkstra's and helper methods
   async animateDijkstra(nodeArray, startNode, endNode) {
     let path = [];
     let prev = await this.animateDj([startNode]);
@@ -131,7 +148,6 @@ class algoAnimator {
         i = curLocation[0];
         j = curLocation[1];
       }
-      path = path.reverse();
     }
     return path;
   }
@@ -156,12 +172,6 @@ class algoAnimator {
     while (queue.length != 0) {
       sort(queue);
       let curCell = queue.shift();
-      if (curCell.type === "end") {
-        this.targetReached = true;
-        curCell.type = "visited";
-        return prev;
-      }
-      curCell.type = "visited";
       for (Element in curCell.next) {
         let nextCell = curCell.next[Element];
         if (nextCell.type === "visited" || nextCell.type === "wall") continue;
@@ -172,9 +182,15 @@ class algoAnimator {
           let j = nextCell.location[1];
           prev[i][j] = curCell.location;
           queue.push(nextCell);
+          if (nextCell.type === "end") {
+            this.targetReached = true;
+            nextCell.type = "visited";
+            return prev;
+          }
+          nextCell.type = "visited";
+          await this.update(nextCell);
         }
       }
-      await this.update(curCell);
     }
   }
   async prepareModDfs(nodeArray, startNode, endNode) {

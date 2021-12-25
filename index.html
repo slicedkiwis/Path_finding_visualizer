@@ -2,7 +2,8 @@
 <head>
     <meta charset="utf-8">
     <title>PathFinder</title>
-    <link rel="stylesheet" type = "text/css" href="css/main.css"></link>
+    <link rel="stylesheet" type = "text/css" href="css/grid.css"></link>
+    <link rel="stylesheet" type = "text/css" href="css/navigation.css"></link>
     <script src="js/cell.js" type = "text/javascript"></script>
     <script src="js/Algorithms.js" type = "text/javascript"></script>
     <script src="js/main.js" type = "text/javascript" ></script>
@@ -11,22 +12,44 @@
     <nav>
     </nav>
     <main>
-        <div id = "algoSelector" class = "algorithmSelector">
+        <div class = "dropdown">
+         <button class = "dropDownButton">Algorithms</button>   
+        <div id = "algoSelector" class = "algorithmSelector dropDownContent">
             <ul>
                 <li id = "aStar">
-                    <button data-value = "aStar" class = "buttons">A-star</button>
+                    <button data-value = "aStar" class = "selectorButton">A-star</button>
 
                 </li>
                 <li id = "dijkstra's" >
-                    <button data-value ="dijkstra's" class = "buttons">Dijkstra's</button>
+                    <button data-value ="dijkstra's"  class = "selectorButton">Dijkstra's</button>
                 </li>
                 <li id = "depthFirstSearch">
-                    <button data-value = "depthFirstSearch" class = "buttons">Depth First Search</button>
+                    <button data-value = "depthFirstSearch" class = "selectorButton">Depth First Search</button>
                 </li>
                 <li id = "breadthFirstSearch">
-                    <button data-value = "breadthFirstSearch" class = "buttons">Breadth First Search</button>
+                    <button data-value = "breadthFirstSearch" class = "selectorButton">Breadth First Search</button>
                 </li>
             </ul>
+        </div>
+        </div>
+        <div class = "dropdown">
+            <button class = dropDownButton>Generate Maze</button>
+             <div id = "mazeSelector" class = "mazeSelector dropDownContent">
+                <ul>
+                    <li id = "recursiveDivision">
+                        <button data-value="recursiveDivision" class = "selectorButton">Recursive Division</button>
+                    </li>
+                    <li id = "randomMaze">
+                        <button data-value = "random" class = "selectorButton">Random</button>
+                    </li>
+                    <li id = "primsAlgorithm"> 
+                        <button data-value="primsAlgorithm"  class = "selectorButton">Prims Algorithm</button>
+                    </li>
+                     <li id = "KruskalsAlgorithm"> 
+                        <button data-value="KruskalsAlgorithm"  class = "selectorButton">Kruskals Algorithm</button>
+                    </li>
+                </ul>
+             </div> 
         </div>
         <section id = "grid" class = "grid">
         </section>

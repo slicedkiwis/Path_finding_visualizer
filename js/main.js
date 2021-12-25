@@ -2,22 +2,17 @@
   let borderColor = "#BDEDE0";
   const colors = {
     empty: "#FFFFFF",
-    visited: "#89CFF0", //"#ADD8E6",
+    visited: "#89CFF0",
     weighted: "brown",
     wall: "#262730",
-    start: "#45CB85",
-    end: "#C65B7C",
-    path: "orange",
+    start: "#35CE8D",
+    end: "#F05454",
+    path: "#FC9918",
   };
   const cellTypes = ["empty", "wall"];
-  const WIDTH_RATIO = //20 
-  //89
-  61
-  ;
-  const HEIGHT_RATIO = //
-  //42
- 28 
-  ;
+  const WIDTH_RATIO = 89; //20
+  //61
+  const HEIGHT_RATIO = 42; //
   let currentType = "wall";
   let currentAlgo = null;
   let divDictionary = {};
@@ -29,11 +24,11 @@
     let maze = []; //node array containing node objects
     let grid = document.getElementById("grid"); // grid containing divs
     let counter = 0;
-    for (let i = 0, l = 0; i < height; i += Math.floor(height / HEIGHT_RATIO, l++)) {
+    for (let i = 0, l = 0; i < height; i += height / HEIGHT_RATIO, l++) {
       let mazeRow = []; //node object row
       let row = document.createElement("div");
       row.className = "gridRow";
-      for (let j = 0, k = 0; j < width; j += Math.floor(width / WIDTH_RATIO),k++) {
+      for (let j = 0, k = 0; j < width; j += width / WIDTH_RATIO, k++) {
         let id = "cell" + counter;
         let cellDiv = document.createElement("div");
         cellDiv.className = "cell";
@@ -42,11 +37,11 @@
         divDictionary[id] = cellDiv;
         row.appendChild(cellDiv);
 
-        let cellNode = new cell(id, cellTypes[0],[]);
+        let cellNode = new cell(id, cellTypes[0], []);
         mazeRow.push(cellNode);
         cellDictionary[id] = cellNode;
         counter++;
-        cellNode.setLocation([l,k]); 
+        cellNode.setLocation([l, k]);
       }
       grid.appendChild(row);
       maze.push(mazeRow);
@@ -96,12 +91,13 @@
       startNode = null;
       endNode = null;
       currentAlgo = null;
-      Array.from(grid.getElementsByClassName("cell")).forEach((node) => {
-        cellDictionary[node.id].type = "empty";
-        cellDictionary[node.id].distance = Infinity;
-        cellDictionary[node.id].weight = 0;
-        node.style.backgroundColor = colors[cellDictionary[node.id].type];
-        node.style.border = "solid 0.01vh #BDEDE0";
+      Array.from(grid.getElementsByClassName("cell")).forEach((cell) => {
+      let curCell = cellDictionary[cell.id];   
+      curCell.type = "empty";
+      curCell.distance = Infinity;  
+      curCell.weighted = 0;
+      cell.style.backgroundColor = colors[curCell.type];
+      cell.style.border = `0.01vh solid ${borderColor}`;
       });
     }
     //handling input
@@ -141,13 +137,13 @@
             if (endNode) {
               if (currentAlgo) {
                 animate(startNode, currentAlgo);
-              } else alert("cselect an algo");
+              } else alert("select an algorithm");
             } else alert("select an end node");
-          } else alert("select a startNode");
+          } else alert("select a start node");
         }
       });
       function handleNavigationButtons() {
-        let buttons = document.getElementsByClassName("buttons");
+        let buttons = document.getElementsByClassName("selectorButton");
         Array.from(buttons).forEach((button) => {
           button.onclick = () => {
             currentAlgo = button.getAttribute("data-value");
@@ -167,7 +163,7 @@
               let start = cellDictionary[startNode.id];
               let end = cellDictionary[endNode.id];
               start.type = "empty";
-              start.distance =  Infinity;
+              start.distance = Infinity;
               end.type = "empty";
               divDictionary[startNode.id].style.backgroundColor =
                 colors[startNode.type];
@@ -198,7 +194,11 @@
             cellDictionary[startNode.id].type = "start";
             cell.style.backgroundColor = colors["start"];
             cell.style.border = "none";
-            divDictionary[startNode.id].style.border = `solid 0.1vh ${(divDictionary[startNode.id].style.backgroundColor = colors[startNode.type])}`;
+            divDictionary[
+              startNode.id
+            ].style.border = `solid 0.1vh ${(divDictionary[
+              startNode.id
+            ].style.backgroundColor = colors[startNode.type])}`;
           }
         });
       });
@@ -216,12 +216,13 @@
       if (currentAlgo == "depthFirstSearch") {
         path = await animator.animateDfs(startNode);
       } else if (currentAlgo == "breadthFirstSearch") {
-        path = await animator.animateBfs([startNode],startNode,endNode);
+        path = await animator.animateBfs([startNode], startNode, endNode);
       } else if (currentAlgo == "aStar") {
       } else if (currentAlgo == "dijkstra's") {
         path = await animator.animateDijkstra(nodeArray, startNode, endNode);
       }
-      for(cell in path){
+      path = path.reverse();
+      for (cell in path) {
         path[cell].type = "path";
         await animator.sleep(0.1);
         animator.update(path[cell]);

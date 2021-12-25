@@ -1,0 +1,52 @@
+:root{
+  --hoverColor:rgb(148, 148, 148);
+}
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 49vw;
+  min-height: auto;
+  .dropDownButton {
+    background-color: rgb(40, 44, 52);
+    color: white;
+    padding: 0.5em;
+    font-size: 1em;
+    border: none;
+    width: 100%;
+  }
+  .dropDownContent {
+    display: none;
+    position: fixed;
+    min-width: 49%;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    .selectorButton {
+      background-color: rgb(56, 56, 56);
+      color: white;
+      padding: 0.5em;
+      font-size: 1em;
+      border: none;
+      width: 100%;
+      text-align: center;
+    }
+    ul {
+      list-style-type: none;
+    }
+  }
+.dropDownButton:hover{
+  background-color:var(--hoverColor);
+}
+.selectorButton:hover{
+  background-color:var(--hoverColor);
+
+}
+}
+.dropdown:hover .dropDownContent {
+  display: block;
+}
+
