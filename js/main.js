@@ -10,9 +10,8 @@
     path: "#FC9918",
   };
   const cellTypes = ["empty", "wall"];
-  const WIDTH_RATIO = 89; //20
-  //61
-  const HEIGHT_RATIO = 42; //
+  const WIDTH_RATIO = 89; 
+  const HEIGHT_RATIO = 42;
   let currentType = "wall";
   let currentAlgo = null;
   let divDictionary = {};
@@ -227,9 +226,7 @@
         await animator.sleep(0.1);
         animator.update(path[cell]);
       }
-      console.log(path);
     }
-    /// calling funcitons
     inputHandler();
     startEndHandler();
   }

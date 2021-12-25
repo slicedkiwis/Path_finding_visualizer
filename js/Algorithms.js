@@ -12,25 +12,25 @@ class algoAnimator {
   async update(cell, time) {
     let cellDiv = this.divDictionary[cell.id];
 
-    let initialColor = "#62F9F4";
-    let interMediateColor = "#F9CFF2";
+    let interMediateColor = "#FF5F7E";
+    let initialColor = "#B000B9";
     cellDiv.animate(
       [
         {
           background: `${interMediateColor}`,
-          opacity: 1,
-          offset: 0.4,
+          opacity: 0.1,
+          offset: 0.1,
           border:`0.01vh solid ${this.colors[cell.type]}`
         },
         {
           background: `${initialColor}`,
           opacity: 0.4,
-          offset: 0.9,
+          offset: 0.5,
           border:`0.01vh solid ${this.colors[cell.type]}`
         },
         {
           background: `${this.colors[cell.type]}`,
-          opacity: 1,
+          opacity: 0.9,
           offset: 1,
           border:`0.01vh solid ${this.colors[cell.type]}`
         },
