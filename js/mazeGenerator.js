@@ -65,4 +65,13 @@ class mazeGenerator {
       }
     }
   }
+  async generateRecursiveDivision(){
+
+  }
+  async generatePrimsAlgorithm(){
+
+  }
+  async generatreKruskalsAlgorith(){
+
+  }
 }
