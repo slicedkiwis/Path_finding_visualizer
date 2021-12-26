@@ -1,11 +1,15 @@
 :root {
-  --hoverColor:rgb(148, 148, 148);
+  --hoverColor: rgb(148, 148, 148);
 }
 
 * {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.navContainer {
+  background-color: #282c34;
 }
 
 .dropdown {
@@ -33,7 +37,17 @@
   z-index: 1;
 }
 
-.dropdown .dropDownContent .selectorButton {
+.dropdown .dropDownContent .algorithmButton {
+  background-color: #383838;
+  color: white;
+  padding: 0.5em;
+  font-size: 1em;
+  border: none;
+  width: 100%;
+  text-align: center;
+}
+
+.dropdown .dropDownContent .mazeButton {
   background-color: #383838;
   color: white;
   padding: 0.5em;
@@ -51,7 +65,11 @@
   background-color: var(--hoverColor);
 }
 
-.dropdown .selectorButton:hover {
+.dropdown .mazeButton:hover {
+  background-color: var(--hoverColor);
+}
+
+.dropdown .algorithmButton:hover {
   background-color: var(--hoverColor);
 }
 

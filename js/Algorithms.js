@@ -11,20 +11,19 @@ class algoAnimator {
   }
   async update(cell, time) {
     let cellDiv = this.divDictionary[cell.id];
-
-    let interMediateColor = "#FF5F7E";
-    let initialColor = "#B000B9";
+    let interMediateColor = "#394053";
+    let initialColor = "#442234";
     cellDiv.animate(
       [
         {
           background: `${interMediateColor}`,
-          opacity: 0.1,
+          opacity: 0.8,
           offset: 0.1,
           border:`0.01vh solid ${this.colors[cell.type]}`
         },
         {
           background: `${initialColor}`,
-          opacity: 0.4,
+          opacity: 0.9,
           offset: 0.5,
           border:`0.01vh solid ${this.colors[cell.type]}`
         },
@@ -43,34 +42,12 @@ class algoAnimator {
         direction: "alternate",
       }
     );
-
     cellDiv.style.backgroundColor = this.colors[cell.type];
     cellDiv.style.border = `1px solid ${this.borderColor}`;
     await this.sleep(time);
   }
   async animateDfs(cell) {
-    try {
-      if (cell.type == "end") {
-        this.targetReached = true;
-        return [cell];
-      }
-      if (
-        (cell.type != "empty" && cell.type != "end" && cell.type != "start") ||
-        this.targetReached
-      )
-        return [];
-      cell.type = "visited";
-      let minPath = [];
-      await this.update(cell, 0.01);
-      for (Element in cell.next) {
-        let path = await this.animateDfs(cell.next[Element]);
-        if (path.length > 0) minPath = path;
-      }
-      minPath.push(cell);
-      return minPath;
-    } catch (e) {
-      console.log(e);
-    }
+    
   }
   async modifiedDfs() {
     this.prepareModDfs();

@@ -10,10 +10,11 @@
     path: "#FC9918",
   };
   const cellTypes = ["empty", "wall"];
-  const WIDTH_RATIO = 89; 
+  const WIDTH_RATIO = 89;
   const HEIGHT_RATIO = 42;
   let currentType = "wall";
   let currentAlgo = null;
+  let currentMazeType = null;
   let divDictionary = {};
   let cellDictionary = {};
   let startNode = null;
@@ -91,12 +92,12 @@
       endNode = null;
       currentAlgo = null;
       Array.from(grid.getElementsByClassName("cell")).forEach((cell) => {
-      let curCell = cellDictionary[cell.id];   
-      curCell.type = "empty";
-      curCell.distance = Infinity;  
-      curCell.weighted = 0;
-      cell.style.backgroundColor = colors[curCell.type];
-      cell.style.border = `0.01vh solid ${borderColor}`;
+        let curCell = cellDictionary[cell.id];
+        curCell.type = "empty";
+        curCell.distance = Infinity;
+        curCell.weighted = 0;
+        cell.style.backgroundColor = colors[curCell.type];
+        cell.style.border = `0.01vh solid ${borderColor}`;
       });
     }
     //handling input
@@ -142,10 +143,21 @@
         }
       });
       function handleNavigationButtons() {
-        let buttons = document.getElementsByClassName("selectorButton");
-        Array.from(buttons).forEach((button) => {
-          button.onclick = () => {
-            currentAlgo = button.getAttribute("data-value");
+        let algorithmButtons =
+          document.getElementsByClassName("algorithmButton");
+        Array.from(algorithmButtons).forEach((algorithmButtons) => {
+          algorithmButtons.onclick = () => {
+            currentAlgo = algorithmButtons.getAttribute("data-value");
+          };
+        });
+        let mazeButtons = document.getElementsByClassName("mazeButton");
+        Array.from(mazeButtons).forEach((mazeButtons) => {
+          mazeButtons.onclick = () => {
+            currentMazeType = mazeButtons.getAttribute("data-value");
+            let mazeAnimator = new mazeGenerator(divDictionary, nodeArray, colors);
+            if ((currentMazeType = "random")) {
+              mazeAnimator.generateRandomMaze();
+            }
           };
         });
       }
