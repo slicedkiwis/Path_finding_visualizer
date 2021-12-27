@@ -19,19 +19,19 @@ class algoAnimator {
           background: `${interMediateColor}`,
           opacity: 0.8,
           offset: 0.1,
-          border:`0.01vh solid ${this.colors[cell.type]}`
+          border: `0.01vh solid ${this.colors[cell.type]}`,
         },
         {
           background: `${initialColor}`,
           opacity: 0.9,
           offset: 0.5,
-          border:`0.01vh solid ${this.colors[cell.type]}`
+          border: `0.01vh solid ${this.colors[cell.type]}`,
         },
         {
           background: `${this.colors[cell.type]}`,
           opacity: 0.9,
           offset: 1,
-          border:`0.01vh solid ${this.colors[cell.type]}`
+          border: `0.01vh solid ${this.colors[cell.type]}`,
         },
       ],
       {
@@ -47,7 +47,34 @@ class algoAnimator {
     await this.sleep(time);
   }
   async animateDfs(cell) {
-    
+    if (cell.type === "end") {
+      this.targetReached = true;
+      cell.type = "visited";
+      this.update(cell);
+      return [cell];
+    }
+    cell.type = "visited";
+    await this.update(cell, 0.1);
+    let path = [];
+    for (Element in cell.next) {
+      let nextCell = cell.next[Element];
+      if (
+        !this.targetReached &&
+        (nextCell.type === "empty" || nextCell.type === "end")
+      ) {
+        let newPath = await this.animateDfs(nextCell);
+        if(newPath.length + 1 < path.length){
+          path = newPath;
+          path.push(cell)
+        }else if(path.length === 0){
+          path = newPath;
+          if(path.length !==0){
+            path.push(cell);
+          }
+        }
+      }
+    }
+    return path;
   }
   async modifiedDfs() {
     this.prepareModDfs();
@@ -149,11 +176,15 @@ class algoAnimator {
     while (queue.length != 0) {
       sort(queue);
       let curCell = queue.shift();
+      if(curCell.type === "start"){
+        curCell.type = "visited";
+        this.update(curCell,0);
+      }
       for (Element in curCell.next) {
         let nextCell = curCell.next[Element];
         if (nextCell.type === "visited" || nextCell.type === "wall") continue;
         // preform relaxtion update distance to current node.
-        if (curCell.distance + 1 < nextCell.distance) {
+        if (curCell.distance + 1 + curCell.weight < nextCell.distance + nextCell.weight) {
           nextCell.distance = curCell.distance + 1;
           let i = nextCell.location[0];
           let j = nextCell.location[1];

@@ -13,7 +13,7 @@ class mazeGenerator {
       [
         {
           borderRadius: "10px",
-          transform: "rotate(0deg) scale(0.5)",
+          transform: "rotate(-180deg) scale(0.5)",
           background: `black`,
           offset: 0.5,
           border: `0.01vh solid ${this.colors[cell.type]}`,
@@ -36,9 +36,21 @@ class mazeGenerator {
     );
     cellDiv.style.backgroundColor = this.colors[cell.type];
     cellDiv.style.border = `0.01vw solid ${this.colors[cell.type]}`;
-    await this.sleep(time);
+  }
+  clear() {
+    this.nodeArray.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell.type === "wall") {
+          let cellDiv = this.divDictionary[cell.id];
+          cell.type = "empty";
+          cellDiv.style.backgroundColor = this.colors[cell.type];
+          cellDiv.style.border = `0.01vw solid ${this.colors["border"]}`;
+        }
+      });
+    });
   }
   async generateRandomMaze() {
+    this.clear();
     for (let i = 0, k = this.nodeArray.length - 1; i <= k; i++, k--) {
       for (
         let j = 0, l = this.nodeArray[k].length - 1;
@@ -50,7 +62,6 @@ class mazeGenerator {
           let secondChance = Math.floor(Math.random() * 100);
           if (secondChance % 2) {
             this.nodeArray[i][j].type = "wall";
-            console.log(this.nodeArray[i][j]);
             await this.update(this.nodeArray[i][j], 0.1);
           }
         }
@@ -58,20 +69,13 @@ class mazeGenerator {
           let secondChance = Math.floor(Math.random() * 100);
           if (secondChance % 2) {
             this.nodeArray[k][l].type = "wall";
-            console.log(this.nodeArray[k][l]);
             await this.update(this.nodeArray[k][l], 0.1);
           }
         }
       }
     }
   }
-  async generateRecursiveDivision(){
-
-  }
-  async generatePrimsAlgorithm(){
-
-  }
-  async generatreKruskalsAlgorith(){
-
-  }
+  async generateRecursiveDivision() {}
+  async generatePrimsAlgorithm() {}
+  async generatreKruskalsAlgorith() {}
 }

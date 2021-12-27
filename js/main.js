@@ -1,5 +1,4 @@
 (function (window, document, undefined) {
-  let borderColor = "#BDEDE0";
   const colors = {
     empty: "#FFFFFF",
     visited: "#89CFF0",
@@ -8,10 +7,11 @@
     start: "#35CE8D",
     end: "#F05454",
     path: "#FC9918",
+    border: "#BDEDE0"
   };
   const cellTypes = ["empty", "wall"];
-  const WIDTH_RATIO = 89;
-  const HEIGHT_RATIO = 42;
+  const WIDTH_RATIO =89 ; // 89
+  const HEIGHT_RATIO =42; // 42
   let currentType = "wall";
   let currentAlgo = null;
   let currentMazeType = null;
@@ -97,7 +97,7 @@
         curCell.distance = Infinity;
         curCell.weighted = 0;
         cell.style.backgroundColor = colors[curCell.type];
-        cell.style.border = `0.01vh solid ${borderColor}`;
+        cell.style.border = `0.01vh solid ${colors["border"]}`;
       });
     }
     //handling input
@@ -113,7 +113,7 @@
               cellDiv.style.backgroundColor = colors[cell.type];
               if (cell.type != "empty")
                 cellDiv.style.border = `solid 0.01vh ${colors[cell.type]}`;
-              else cellDiv.style.border = `solid 0.01vh ${borderColor}`;
+              else cellDiv.style.border = `solid 0.01vh ${colors["border"]}`;
             };
           });
         });
@@ -182,10 +182,10 @@
                 colors[endNode.type];
               divDictionary[
                 endNode.id
-              ].style.border = `solid 0.1vh ${borderColor}`;
+              ].style.border = `solid 0.1vh ${colors["border"]}`;
               divDictionary[
                 startNode.id
-              ].style.border = `solid 0.1vh ${borderColor}`;
+              ].style.border = `solid 0.1vh ${colors["border"]}`;
               startNode = null;
               endNode = null;
             } else {
@@ -222,7 +222,7 @@
         nodeArray,
         colors,
         targetReached,
-        borderColor
+        colors["border"]
       );
       if (currentAlgo == "depthFirstSearch") {
         path = await animator.animateDfs(startNode);
