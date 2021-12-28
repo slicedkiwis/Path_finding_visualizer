@@ -80,8 +80,8 @@
     let grid = document.getElementById("grid");
     grid.type = currentType;
     grid.colors = colors;
-    //utility clear function
-    function clear() {
+    //utility  clear function
+    function clearGrid() {
       let currentType = "wall";
       let currentAlgo = null;
       let startNode = null;
@@ -98,6 +98,20 @@
         curCell.weighted = 0;
         cell.style.backgroundColor = colors[curCell.type];
         cell.style.border = `0.01vh solid ${colors["border"]}`;
+      });
+    }
+    function clearPath(){
+      nodeArray.forEach(row =>{
+        row.forEach( cell =>{
+          if(cell.type != "wall" && cell.type != "start" && cell.type != "end"){
+            cell.type = "empty";
+            cell.distance = Infinity;
+            cell.weighted = 0;
+            divDictionary[cell.id].style.backgroundColor = colors[cell.type];
+            divDictionary[cell.id].style.border = `0.01vh solid ${colors["border"]}`;
+;
+          }
+        });
       });
     }
     //handling input
@@ -129,8 +143,11 @@
         if (typeof val === "number" && !isNaN(val)) {
           currentType = cellTypes[val % cellTypes.length];
         }
-        if (e.key == "c") {
-          clear();
+        if (e.key == "x") {
+          clearGrid();
+        }
+        if(e.key == "c"){
+         clearPath(); 
         }
         if (e.key == " " || e.key == "Spacebar") {
           if (startNode) {
@@ -155,9 +172,16 @@
           mazeButtons.onclick = () => {
             currentMazeType = mazeButtons.getAttribute("data-value");
             let mazeAnimator = new mazeGenerator(divDictionary, nodeArray, colors);
-            if ((currentMazeType = "random")) {
+            if ((currentMazeType === "random")) {
               mazeAnimator.generateRandomMaze();
+            }else if(currentMazeType ==="recursiveDivision"){
+              mazeAnimator.generateRecursiveDivision(nodeArray[0][0]);
+            } else if(currentMazeType === "primsAlgorithm"){
+
+            } else if(currentMazeType === "KruskalsAlgorithm"){
+
             }
+
           };
         });
       }
@@ -238,6 +262,7 @@
         await animator.sleep(0.1);
         animator.update(path[cell]);
       }
+    console.log(nodeArray);
     }
     inputHandler();
     startEndHandler();

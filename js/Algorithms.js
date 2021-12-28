@@ -16,6 +16,8 @@ class algoAnimator {
     cellDiv.animate(
       [
         {
+          borderRadius: "10px",
+          transform: "rotate(-180deg) scale(0.5)",
           background: `${interMediateColor}`,
           opacity: 0.8,
           offset: 0.1,
@@ -28,6 +30,8 @@ class algoAnimator {
           border: `0.01vh solid ${this.colors[cell.type]}`,
         },
         {
+          borderRadius: "10px",
+          transform: "rotate(-360deg) scale(1)",
           background: `${this.colors[cell.type]}`,
           opacity: 0.9,
           offset: 1,
@@ -35,15 +39,34 @@ class algoAnimator {
         },
       ],
       {
-        duration: 200,
+        duration: 400,
         easing: "ease-in-out",
         delay: 0.1,
-        iterations: 3,
+        iterations: 1,
         direction: "alternate",
       }
     );
     cellDiv.style.backgroundColor = this.colors[cell.type];
-    cellDiv.style.border = `1px solid ${this.borderColor}`;
+
+    if (cell.type === "empty")
+      cellDiv.style.border = `1px solid ${this.borderColor}`;
+    else {
+      let rgb = hexToRgb(this.colors[cell.type]);
+      let offSet = 200;
+      let rgbText = `rgb(${rgb['r']+Math.floor(Math.random() * offSet)},${rgb['g'] + Math.floor(Math.random() * offSet)},${rgb['b'] + Math.floor(Math.random() * offSet)}`;
+      console.log(rgbText);
+      cellDiv.style.border = `1px solid ${rgbText}`;
+    }
+    function hexToRgb(hex) {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16),
+          }
+        : null;
+    }
     await this.sleep(time);
   }
   async animateDfs(cell) {
@@ -63,12 +86,12 @@ class algoAnimator {
         (nextCell.type === "empty" || nextCell.type === "end")
       ) {
         let newPath = await this.animateDfs(nextCell);
-        if(newPath.length + 1 < path.length){
+        if (newPath.length + 1 < path.length) {
           path = newPath;
-          path.push(cell)
-        }else if(path.length === 0){
+          path.push(cell);
+        } else if (path.length === 0) {
           path = newPath;
-          if(path.length !==0){
+          if (path.length !== 0) {
             path.push(cell);
           }
         }
@@ -176,15 +199,18 @@ class algoAnimator {
     while (queue.length != 0) {
       sort(queue);
       let curCell = queue.shift();
-      if(curCell.type === "start"){
+      if (curCell.type === "start") {
         curCell.type = "visited";
-        this.update(curCell,0);
+        this.update(curCell, 0);
       }
       for (Element in curCell.next) {
         let nextCell = curCell.next[Element];
         if (nextCell.type === "visited" || nextCell.type === "wall") continue;
         // preform relaxtion update distance to current node.
-        if (curCell.distance + 1 + curCell.weight < nextCell.distance + nextCell.weight) {
+        if (
+          curCell.distance + 1 + curCell.weight <
+          nextCell.distance + nextCell.weight
+        ) {
           nextCell.distance = curCell.distance + 1;
           let i = nextCell.location[0];
           let j = nextCell.location[1];

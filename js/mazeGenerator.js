@@ -27,7 +27,7 @@ class mazeGenerator {
         },
       ],
       {
-        duration: 2000,
+        duration: 1500,
         easing: "ease-in-out",
         delay: 0.1,
         iterations: 1,
@@ -75,7 +75,99 @@ class mazeGenerator {
       }
     }
   }
-  async generateRecursiveDivision() {}
+  async generateRecursiveDivision() {
+    this.clear();
+    let gridHeight = this.nodeArray.length;
+    let gridWidth = this.nodeArray[0].length;
+    let walls = [];
+    function chooseOrientation(width, height) {
+      if (width < height) return 1;
+      else return 0;
+    }
+    function rand(value) {
+      return Math.floor(Math.random() * value);
+    }
+    function divide(grid, x, y, width, height, orientation) {
+      if (width <= 4 || height <= 4) return;
+      //location of wall
+      let wallX =
+        x + (orientation ? 0 : width === 2 ? 1 : Math.floor(width / 2));
+      let wallY =
+        y + (orientation ? (height === 2 ? 1 : Math.floor(height / 2)) : 0);
+      // location of hole
+      let holeX = wallX + (orientation ? rand(width) : 0);
+      let holeY = wallY + (orientation ? 0 : rand(height));
+      let holeX2 = wallX + (orientation ? rand(width) : 0);
+      let holeY2 = wallY + (orientation ? 0 : rand(height));
+
+      // direction of wall;
+      let directionX = orientation ? 1 : 0;
+      let directionY = orientation ? 0 : 1;
+      let wallLength = orientation ? width : height;
+      while (wallLength--) {
+        if (
+          (holeX != wallX || holeY != wallY) &&
+          (holeX2 != wallX || holeY2 != wallY)
+        ) {
+          if (
+            grid[wallX][wallY].type === "empty" 
+          )
+            walls.push(grid[wallX][wallY]);
+        } else {
+          grid[wallX][wallY].type = "path";
+        }
+
+        wallX += directionX;
+        wallY += directionY;
+      }
+      let newX = x;
+      let newY = y;
+
+      let newWidth = orientation ? width : wallX - x + 1;
+      let newHeight = orientation ? wallY - y + 1 : height;
+      divide(
+        grid,
+        newX,
+        newY,
+        newWidth,
+        newHeight,
+        chooseOrientation(newWidth, newHeight)
+      );
+
+      newX = orientation ? x : wallX + 1;
+      newY = orientation ? wallY + 1 : y;
+      newWidth = orientation ? width : x + width - wallX - 1;
+      newHeight = orientation ? y + height - wallY - 1 : height;
+      divide(
+        grid,
+        newX,
+        newY,
+        newWidth,
+        newHeight,
+        chooseOrientation(newWidth, newHeight)
+      );
+    }
+
+    divide(
+      this.nodeArray,
+      0,
+      0,
+      gridHeight,
+      gridWidth,
+      chooseOrientation(gridWidth, gridHeight)
+    );
+    for (Element in walls) {
+      let cell = walls[Element];
+      cell.type = "wall";
+      this.update(cell);
+      await this.sleep(0.1);
+    }
+   this.nodeArray.forEach(row =>{
+       row.forEach(cell =>{
+           if(cell.type === "path") cell.type = "empty";
+       })
+   }); 
+  }
   async generatePrimsAlgorithm() {}
   async generatreKruskalsAlgorith() {}
 }
