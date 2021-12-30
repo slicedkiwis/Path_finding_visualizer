@@ -1,17 +1,17 @@
 (function (window, document, undefined) {
   const colors = {
     empty: "#FFFFFF",
-    visited: "#89CFF0",
-    weighted: "brown",
+    visited: "#ADD8E6",
+    weighted: "#A9A9A9",
     wall: "#262730",
     start: "#35CE8D",
     end: "#F05454",
-    path: "#FC9918",
-    border: "#BDEDE0"
+    path: "#FF7F50",
+    border: "#ADD8E6",
   };
-  const cellTypes = ["empty", "wall"];
-  const WIDTH_RATIO =89 ; // 89
-  const HEIGHT_RATIO =42; // 42
+  const cellTypes = ["empty", "wall", "weighted"];
+  const WIDTH_RATIO = 62;
+  const HEIGHT_RATIO = 28.5;
   let currentType = "wall";
   let currentAlgo = null;
   let currentMazeType = null;
@@ -55,6 +55,8 @@
       ];
       for (let i = 0; i < maze.length; i++) {
         for (let j = 0; j < maze[i].length; j++) {
+          maze[i][j].x = i;
+          maze[i][j].y = j;
           for (let k = 0; k < dir.length; k++) {
             let newI = i + dir[k][0];
             let newJ = j + dir[k][1];
@@ -73,6 +75,67 @@
   }
   window.onload = init;
   function init() {
+    //instruction pannel animations
+    document.getElementsByTagName("span")[0].onclick = (e) => {
+      let target = document.getElementsByClassName("panel")[0];
+      target.style.transitionProperty = "height, margin, padding";
+      target.style.transitionDuration = 1000 + "ms";
+      target.style.boxSizing = "border-box";
+      target.style.height = target.offsetHeight + "px";
+      target.offsetHeight;
+      target.style.overflow = "hidden";
+      target.style.height = 0;
+      target.style.paddingTop = 0;
+      target.style.paddingBottom = 0;
+      target.style.marginTop = 0;
+      target.style.marginBottom = 0;
+      window.setTimeout(() => {
+        target.style.display = "none";
+        target.style.removeProperty("height");
+        target.style.removeProperty("padding-top");
+        target.style.removeProperty("padding-bottom");
+        target.style.removeProperty("margin-top");
+        target.style.removeProperty("margin-bottom");
+        target.style.removeProperty("overflow");
+        target.style.removeProperty("transition-duration");
+        target.style.removeProperty("transition-property");
+        //alert("!");
+      }, 1000);
+    };
+    let move = (e) => {
+      let target = document.getElementsByClassName("panel")[0];
+      target.style.left = e.pageX - target.offsetWidth / 2 + "px";
+      target.style.top = e.pageY - target.offsetHeight / 2 + "px";
+    };
+    document.getElementsByClassName("panel")[0].onmousedown = (e) => {
+      function checkCursorLocation(e) {
+        let mouseX = e.pageX;
+        let mouseY = e.pageY;
+        let rect = document
+          .getElementsByClassName("panel")[0]
+          .getBoundingClientRect();
+        if (mouseX < rect.right) {
+          if (mouseY > rect.top) {
+            if (rect.right - mouseX < 40 && rect.top - mouseY < 40)
+            {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+      if (checkCursorLocation(e)) {
+        move(e);
+        document
+          .getElementsByClassName("panel")[0]
+          .addEventListener("mousemove", move);
+      }
+    };
+    document.getElementsByClassName("panel")[0].onmouseup = (e) => {
+      document
+        .getElementsByClassName("panel")[0]
+        .removeEventListener("mousemove", move);
+    };
     //generate grid
     let width = document.body.clientWidth;
     let height = document.body.clientHeight;
@@ -95,21 +158,36 @@
         let curCell = cellDictionary[cell.id];
         curCell.type = "empty";
         curCell.distance = Infinity;
-        curCell.weighted = 0;
+        curCell.weight = 0;
+        curCell.g = Infinity;
+        curCell.f = Infinity;
+        curCell.open = false;
+        curCell.closed = false;
         cell.style.backgroundColor = colors[curCell.type];
         cell.style.border = `0.01vh solid ${colors["border"]}`;
       });
     }
-    function clearPath(){
-      nodeArray.forEach(row =>{
-        row.forEach( cell =>{
-          if(cell.type != "wall" && cell.type != "start" && cell.type != "end"){
+    function clearPath() {
+      nodeArray.forEach((row) => {
+        row.forEach((curCell) => {
+          if (
+            curCell.type != "wall" &&
+            curCell.type != "start" &&
+            curCell.type != "end"
+          ) {
             cell.type = "empty";
-            cell.distance = Infinity;
-            cell.weighted = 0;
-            divDictionary[cell.id].style.backgroundColor = colors[cell.type];
-            divDictionary[cell.id].style.border = `0.01vh solid ${colors["border"]}`;
-;
+            curCell.type = "empty";
+            curCell.distance = Infinity;
+            curCell.weight = 0;
+            curCell.g = Infinity;
+            curCell.f = Infinity;
+            curCell.open = false;
+            curCell.closed = false;
+            divDictionary[curCell.id].style.backgroundColor =
+              colors[curCell.type];
+            divDictionary[
+              curCell.id
+            ].style.border = `0.01vh solid ${colors["border"]}`;
           }
         });
       });
@@ -128,6 +206,10 @@
               if (cell.type != "empty")
                 cellDiv.style.border = `solid 0.01vh ${colors[cell.type]}`;
               else cellDiv.style.border = `solid 0.01vh ${colors["border"]}`;
+              if (currentType === "weighted") {
+                cell.type = "weighted";
+                cell.weight = 50;
+              }
             };
           });
         });
@@ -146,14 +228,14 @@
         if (e.key == "x") {
           clearGrid();
         }
-        if(e.key == "c"){
-         clearPath(); 
+        if (e.key == "c") {
+          clearPath();
         }
         if (e.key == " " || e.key == "Spacebar") {
           if (startNode) {
             if (endNode) {
               if (currentAlgo) {
-                animate(startNode, currentAlgo);
+                animateAlgorithm(startNode, currentAlgo);
               } else alert("select an algorithm");
             } else alert("select an end node");
           } else alert("select a start node");
@@ -171,24 +253,26 @@
         Array.from(mazeButtons).forEach((mazeButtons) => {
           mazeButtons.onclick = () => {
             currentMazeType = mazeButtons.getAttribute("data-value");
-            let mazeAnimator = new mazeGenerator(divDictionary, nodeArray, colors);
-            if ((currentMazeType === "random")) {
+            let mazeAnimator = new mazeGenerator(
+              divDictionary,
+              nodeArray,
+              colors
+            );
+            if (currentMazeType === "random") {
               mazeAnimator.generateRandomMaze();
-            }else if(currentMazeType ==="recursiveDivision"){
+            } else if (currentMazeType === "recursiveDivision") {
               mazeAnimator.generateRecursiveDivision(nodeArray[0][0]);
-            } else if(currentMazeType === "primsAlgorithm"){
-
-            } else if(currentMazeType === "KruskalsAlgorithm"){
-
+            } else if (currentMazeType === "wilsonsAlgorithm") {
+              mazeAnimator.generateWilsonsAlgorithm();
+            } else if (currentMazeType === "aldousBroderAlgorithm") {
+              mazeAnimator.generatealdousBroderAlgorithm();
             }
-
           };
         });
       }
       handleNavigationButtons();
       handleMouseInput();
     }
-    // handling the start and end node selection
     function startEndHandler() {
       let cells = grid.getElementsByClassName("cell");
       Array.from(cells).forEach((cell) => {
@@ -238,8 +322,7 @@
         });
       });
     }
-    // function that animates the visualizer
-    async function animate(startNode, currentAlgo) {
+    async function animateAlgorithm(startNode, currentAlgo) {
       let path = [];
       let animator = new algoAnimator(
         divDictionary,
@@ -253,6 +336,7 @@
       } else if (currentAlgo == "breadthFirstSearch") {
         path = await animator.animateBfs([startNode], startNode, endNode);
       } else if (currentAlgo == "aStar") {
+        path = await animator.animateAstar(startNode, endNode, nodeArray);
       } else if (currentAlgo == "dijkstra's") {
         path = await animator.animateDijkstra(nodeArray, startNode, endNode);
       }
@@ -262,7 +346,6 @@
         await animator.sleep(0.1);
         animator.update(path[cell]);
       }
-    console.log(nodeArray);
     }
     inputHandler();
     startEndHandler();

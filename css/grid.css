@@ -9,7 +9,6 @@ body {
 }
 
 .grid {
-  background-color: white;
   min-height: 95vh;
   min-width: 100vh;
   display: -webkit-box;
@@ -40,9 +39,9 @@ body {
 }
 
 .cell {
-  min-height: 2vh;
-  min-width: 1vw;
-  border: solid 1px #BDEDE0;
+  min-height: 3vh;
+  min-width: 1.5vw;
+  border: solid 1px #ADD8E6;
   background-color: white;
 }
 /*# sourceMappingURL=grid.css.map */

@@ -1,96 +1,98 @@
-// handling start and end nodes
-    /*
-    function startEndHandler(){
-    let cells = grid.getElementsByClassName("cell");
-    for(let i =0 ; i < cells.length;i++){
-      let cell = cells[i];
-      cell.addEventListener("dblclick",()=>{
-        if(!startNode.length  || !endNode.length){
-        if(nextCycle == "start"){
-          if(startNode.length){
-            for(let i = 0 ; i < maze.length;i++){
-              for(let j = 0; j < maze[i].length;j++){
-                let current = maze[i][j];
-                if(current.type = "start"){
-                  current.type = "empty";
-                  let curDiv = document.getElementById(current.id);
-                  curDiv.style.backgroundColor = colors[current.type];
-                };
-              }
-            }
-          }
-          startNode[0] = cell;
-          for(let row in maze){
-            for(let node in row){
-              let curNode = maze[row][node];  
-              if(curNode.id = startNode[0].id){
-                startNode[1] = curNode;
-              }
-            }
-          }
-          cell.style.backgroundColor = colors[nextCycle];
-          nextCycle = "end";
-        }else{
-          if(endNode.length){
-            for(let i = 0 ; i < maze.length;i++){
-              for(let j = 0; j < maze[i].length;j++){
-                let current = maze[i][j];
-                if(current.type = "end"){
-                  current.type = "empty";
-                  let curDiv = document.getElementById(current.id);
-                  curDiv.style.backgroundColor = colors[current.type];
-                };
-              }
-            }
-          }
-          endNode[0] = cell;
-          for(let row in maze-1){
-            for(let node in row-1){
-              let curNode = maze[row][node];  
-              if(curNode.id = endNode[0].id){
-                endNode[1] = endNode;
-              }
-            }
-          }
-          cell.style.backgroundColor = colors[nextCycle];
-          nextCycle = "start";
-        }
-      }else{
-        startNode =[]; 
-        endNode = [];
-        for(cell in cells){
-          let val = parseInt(cell);
-          if(Number.isInteger(val)){
-            let cur = cells[cell];
-            cur.style.backgroundColor = colors["empty"];
-          }
-        }
-            for(let i = 0 ; i < maze.length;i++){
-              for(let j = 0; j < maze[i].length;j++){
-                let current = maze[i][j];
-                current.type = "empty";
-            }
-          }
-      }
+/*
+  MODIFIED DFS - NOT IMPLEMENTED
+  async prepareModDfs(nodeArray, startNode, endNode) {
+    // idea is to make a distance map of the cells in relation to the start node
+    // and one in relation to the endNode, then combine them taking the smallest value for each cell, and run animateDJ on that grid
+    // deep clone of the grid
+    function clone(grid) {
+      let newGrid = [];
+      grid.forEach((row) => {
+        let newRow = [];
+        row.forEach((node) => {
+          let newCell = new cell(node.id, node.type, node.next);
+          newRow.push(newCell);
+        });
+        newGrid.push(newRow);
       });
+      return newGrid;
     }
-    //handling the start and end Nodes
+    let nodeArrayClone = clone(nodeArray);
+    let stateSaver = clone(nodeArray);
+    //setting the endNode to reference to a cell in the clone array
+    let flag = false;
+    for (let i = 0; i < nodeArrayClone.length; i++) {
+      if (flag) break;
+      for (let j = 0; j < nodeArrayClone[i].length; j++) {
+        if (nodeArrayClone[i][j].id == endNode.id) {
+          endNode = nodeArrayClone[i][j];
+          flag = true;
+          break;
+        }
+      }
+    }
+    //updating the distance
+    function updateDistance() {
+      //updated the integer distance value
+      function updateDist(queue) {
+        let newQueue = [];
+        while (queue.length) {
+          let curCell = queue.shift();
+          if (curCell.distance == Infinity) curCell.distance = 0;
+          curCell.next.forEach((nextCell) => {
+            if (curCell.distance + 1 < nextCell.distance)
+              nextCell.distance = curCell.distance + 1;
+            if (nextCell.type != "visited") newQueue.push(nextCell);
+            nextCell.type = "visited";
+          });
+        }
+        if (newQueue.length) updateDist(newQueue);
+      }
+      // merges the clone and normal array
+      function mergeArrays() {
+        for (let i = 0; i < nodeArray.length; i++) {
+          for (let j = 0; j < nodeArray[i].length; j++) {
+            nodeArray[i][j].distance = Math.min(
+              nodeArray[i][j].distance,
+              nodeArrayClone[i][j].distance
+            );
+            nodeArray[i][j].type = stateSaver[i][j].type;
+          }
+        }
+      }
+      updateDist([startNode]);
+      updateDist([endNode]);
+      mergeArrays();
+    }
+    updateDistance();
+    return nodeArray;
   }
-    */
 
+  async modifiedDfs() {
+    this.prepareModDfs();
+    let cell = queue.shift();
+    try {
+      if (cell.type == "end") {
+        this.targetReached = true;
+        return [cell];
+      }
+      if (
+        (cell.type != "empty" && cell.type != "end" && cell.type != "start") ||
+        this.targetReached
+      )
+        return [];
+      cell.type = "visited";
+      let minPath = [];
+      await this.update(cell, this.time);
+      sort(cell);
+      for (Element in cell.next) {
+        let path = await this.animateDj([cell.next[Element]]);
+        if (path.length > 0) minPath = path;
+      }
+      minPath.push(cell);
+      return minPath;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
-     /*
-      console.log(startNode);
-     if(startNode){
-       if(endNode){
-        let start = cellDictionary[startNode.id];
-        let end = cellDictionary[endNode.id];
-        start.type = "empty";
-        end.type = "empty";
-       }else{
-        endNode = cellDictionary[cell.id];
-       }
-     }else{
-      startNode = cellDictionary[cell.id];
-      cell.style.backgroundColor = colors[cellDictionary[startNode.id].type];
-     }
+*/

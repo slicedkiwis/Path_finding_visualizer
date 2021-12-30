@@ -5,6 +5,7 @@ class algoAnimator {
     this.colors = colors;
     this.borderColor = borderColor;
     this.nodeArray = nodeArray;
+    this.time = 0.1;
   }
   async sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -17,29 +18,29 @@ class algoAnimator {
       [
         {
           borderRadius: "10px",
-          transform: "rotate(-180deg) scale(0.5)",
+          transform: "rotate(-360deg) scale(0.01)",
           background: `${interMediateColor}`,
-          opacity: 0.8,
-          offset: 0.1,
+          opacity: 0.5,
+          offset: 0.3,
           border: `0.01vh solid ${this.colors[cell.type]}`,
         },
         {
           background: `${initialColor}`,
           opacity: 0.9,
-          offset: 0.5,
+          offset: 0.7,
           border: `0.01vh solid ${this.colors[cell.type]}`,
         },
         {
-          borderRadius: "10px",
+          borderRadius: "100%",
           transform: "rotate(-360deg) scale(1)",
           background: `${this.colors[cell.type]}`,
-          opacity: 0.9,
+          opacity: 0.1,
           offset: 1,
           border: `0.01vh solid ${this.colors[cell.type]}`,
         },
       ],
       {
-        duration: 400,
+        duration: 800,
         easing: "ease-in-out",
         delay: 0.1,
         iterations: 1,
@@ -53,8 +54,9 @@ class algoAnimator {
     else {
       let rgb = hexToRgb(this.colors[cell.type]);
       let offSet = 200;
-      let rgbText = `rgb(${rgb['r']+Math.floor(Math.random() * offSet)},${rgb['g'] + Math.floor(Math.random() * offSet)},${rgb['b'] + Math.floor(Math.random() * offSet)}`;
-      console.log(rgbText);
+      let rgbText = `rgb(${rgb["r"] + Math.floor(Math.random() * offSet)},${
+        rgb["g"] + Math.floor(Math.random() * offSet)
+      },${rgb["b"] + Math.floor(Math.random() * offSet)}`;
       cellDiv.style.border = `1px solid ${rgbText}`;
     }
     function hexToRgb(hex) {
@@ -73,11 +75,11 @@ class algoAnimator {
     if (cell.type === "end") {
       this.targetReached = true;
       cell.type = "visited";
-      this.update(cell);
+      this.update(cell),this.time;
       return [cell];
     }
     cell.type = "visited";
-    await this.update(cell, 0.1);
+    await this.update(cell, this.time);
     let path = [];
     for (Element in cell.next) {
       let nextCell = cell.next[Element];
@@ -98,33 +100,6 @@ class algoAnimator {
       }
     }
     return path;
-  }
-  async modifiedDfs() {
-    this.prepareModDfs();
-    let cell = queue.shift();
-    try {
-      if (cell.type == "end") {
-        this.targetReached = true;
-        return [cell];
-      }
-      if (
-        (cell.type != "empty" && cell.type != "end" && cell.type != "start") ||
-        this.targetReached
-      )
-        return [];
-      cell.type = "visited";
-      let minPath = [];
-      await this.update(cell, 0.01);
-      sort(cell);
-      for (Element in cell.next) {
-        let path = await this.animateDj([cell.next[Element]]);
-        if (path.length > 0) minPath = path;
-      }
-      minPath.push(cell);
-      return minPath;
-    } catch (e) {
-      console.log(e);
-    }
   }
   async animateBfs(queue, start, end) {
     let prev = [];
@@ -148,7 +123,7 @@ class algoAnimator {
         queue.push(nextCell);
         nextCell.type = "visited";
       }
-      await this.update(curCell);
+      await this.update(curCell,this.time);
     }
     let path = [];
     if (this.targetReached) {
@@ -163,6 +138,7 @@ class algoAnimator {
     }
     return path;
   }
+  // constructs the path for dijkstra function
   async animateDijkstra(nodeArray, startNode, endNode) {
     let path = [];
     let prev = await this.animateDj([startNode]);
@@ -178,7 +154,8 @@ class algoAnimator {
     }
     return path;
   }
-  async animateDj(queue) {
+  // actual dijkstra algorithm
+  async animateDj(queue) {0
     function sort(cells) {
       cells.sort((a, b) => {
         let aDist = a.distance;
@@ -201,7 +178,7 @@ class algoAnimator {
       let curCell = queue.shift();
       if (curCell.type === "start") {
         curCell.type = "visited";
-        this.update(curCell, 0);
+        this.update(curCell,0);
       }
       for (Element in curCell.next) {
         let nextCell = curCell.next[Element];
@@ -222,75 +199,74 @@ class algoAnimator {
             return prev;
           }
           nextCell.type = "visited";
-          await this.update(nextCell);
+          await this.update(nextCell,this.time);
         }
       }
     }
   }
-  async prepareModDfs(nodeArray, startNode, endNode) {
-    // idea is to make a distance map of the cells in relation to the start node
-    // and one in relation to the endNode, then combine them taking the smallest value for each cell, and run animateDJ on that grid
-    // deep clone of the grid
-    function clone(grid) {
-      let newGrid = [];
-      grid.forEach((row) => {
-        let newRow = [];
-        row.forEach((node) => {
-          let newCell = new cell(node.id, node.type, node.next);
-          newRow.push(newCell);
-        });
-        newGrid.push(newRow);
+  async animateAstar(startNode, endNode, nodeArray) {
+    function manhatanDistance(cellA, cellB) {
+      return Math.abs(cellA.x - cellB.x) + Math.abs(cellA.y - cellB.y);
+    }
+    function makePath(previous, current) {
+      let path = [];
+      while (previous[current.id]) {
+        current = cameFrom[current.id];
+        path.push(current);
+      }
+      if (path.length) {
+        path.push(endNode);
+      }
+      return path;
+    }
+    let openList = [];
+    let cameFrom = {};
+    startNode.g = 0;
+    startNode.f = 0;
+    openList = [startNode];
+    startNode.open = true;
+    while (openList.length) {
+      //sorting
+      openList.sort((a, b) => {
+        return a.f - b.f;
       });
-      return newGrid;
-    }
-    let nodeArrayClone = clone(nodeArray);
-    let stateSaver = clone(nodeArray);
-    //setting the endNode to reference to a cell in the clone array
-    let flag = false;
-    for (let i = 0; i < nodeArrayClone.length; i++) {
-      if (flag) break;
-      for (let j = 0; j < nodeArrayClone[i].length; j++) {
-        if (nodeArrayClone[i][j].id == endNode.id) {
-          endNode = nodeArrayClone[i][j];
-          flag = true;
-          break;
-        }
+      //
+      let node = openList.shift();
+      node.closed = true;
+      if (node.type === "end") {
+        node.type = "visited";
+        this.targetReached = true;
+        return makePath(cameFrom, node);
       }
-    }
-    //updating the distance
-    function updateDistance() {
-      //updated the integer distance value
-      function updateDist(queue) {
-        let newQueue = [];
-        while (queue.length) {
-          let curCell = queue.shift();
-          if (curCell.distance == Infinity) curCell.distance = 0;
-          curCell.next.forEach((nextCell) => {
-            if (curCell.distance + 1 < nextCell.distance)
-              nextCell.distance = curCell.distance + 1;
-            if (nextCell.type != "visited") newQueue.push(nextCell);
-            nextCell.type = "visited";
-          });
+      for (let i = 0; i < node.next.length; i++) {
+        let neighboor = node.next[i];
+        if (neighboor.closed || neighboor.type === "wall") {
+          continue;
         }
-        if (newQueue.length) updateDist(newQueue);
-      }
-      // merges the clone and normal array
-      function mergeArrays() {
-        for (let i = 0; i < nodeArray.length; i++) {
-          for (let j = 0; j < nodeArray[i].length; j++) {
-            nodeArray[i][j].distance = Math.min(
-              nodeArray[i][j].distance,
-              nodeArrayClone[i][j].distance
-            );
-            nodeArray[i][j].type = stateSaver[i][j].type;
+        if (neighboor.type !== "end") neighboor.type = "visited";
+        this.update(neighboor,this.time);
+        await this.sleep(0.1);
+        let x = neighboor.x;
+        let y = neighboor.y;
+
+        let newG =
+          node.g + ((x - node.x === 0) | (y - node.y === 0) ? 1 : Math.SQRT2);
+
+        if (!neighboor.open || newG < neighboor.g) {
+          neighboor.g = newG;
+          neighboor.f = node.weight + manhatanDistance(neighboor, endNode);
+          cameFrom[neighboor.id] = node;
+          if (!neighboor.open) {
+            openList.push(neighboor);
+            neighboor.open = true;
+          } else {
+            openList.sort((a, b) => {
+              return a.f - b.f;
+            });
           }
         }
       }
-      updateDist([startNode]);
-      updateDist([endNode]);
-      mergeArrays();
     }
-    updateDistance();
-    return nodeArray;
+    return [];
   }
 }

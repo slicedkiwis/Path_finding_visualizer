@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background-color: rgb(40, 44, 52);
 }
 body {
   background-color: white;
@@ -21,8 +20,8 @@ body {
   align-items: center;
 }
 .cell {
-  min-height: 2vh;
-  min-width: 1vw;
-  border: solid 1px #BDEDE0;
+  min-height: 3vh;
+  min-width: 1.5vw;
+  border: solid 1px #ADD8E6;
   background-color: white;
 }

@@ -16,7 +16,7 @@
   position: relative;
   display: inline-block;
   width: 49vw;
-  min-height: auto;
+  min-height: 5vh;
 }
 
 .dropdown .dropDownButton {
