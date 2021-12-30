@@ -225,13 +225,13 @@
         if (typeof val === "number" && !isNaN(val)) {
           currentType = cellTypes[val % cellTypes.length];
         }
-        if (e.key == "x") {
+        if (e.key.toLowerCase() === "x") {
           clearGrid();
         }
-        if (e.key == "c") {
+        if (e.key.toLowerCase() === "c") {
           clearPath();
         }
-        if (e.key == " " || e.key == "Spacebar") {
+        if (e.key === " " || e.key === "Spacebar") {
           if (startNode) {
             if (endNode) {
               if (currentAlgo) {
@@ -331,13 +331,13 @@
         targetReached,
         colors["border"]
       );
-      if (currentAlgo == "depthFirstSearch") {
+      if (currentAlgo === "depthFirstSearch") {
         path = await animator.animateDfs(startNode);
-      } else if (currentAlgo == "breadthFirstSearch") {
+      } else if (currentAlgo === "breadthFirstSearch") {
         path = await animator.animateBfs([startNode], startNode, endNode);
-      } else if (currentAlgo == "aStar") {
+      } else if (currentAlgo === "aStar") {
         path = await animator.animateAstar(startNode, endNode, nodeArray);
-      } else if (currentAlgo == "dijkstra's") {
+      } else if (currentAlgo ==="dijkstra's") {
         path = await animator.animateDijkstra(nodeArray, startNode, endNode);
       }
       path = path.reverse();
