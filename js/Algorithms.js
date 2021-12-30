@@ -254,7 +254,7 @@ class algoAnimator {
 
         if (!neighboor.open || newG < neighboor.g) {
           neighboor.g = newG;
-          neighboor.f = node.weight + manhatanDistance(neighboor, endNode);
+          neighboor.f = (node.weight * 2) + manhatanDistance(neighboor, endNode);
           cameFrom[neighboor.id] = node;
           if (!neighboor.open) {
             openList.push(neighboor);

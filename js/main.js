@@ -262,10 +262,10 @@
               mazeAnimator.generateRandomMaze();
             } else if (currentMazeType === "recursiveDivision") {
               mazeAnimator.generateRecursiveDivision(nodeArray[0][0]);
-            } else if (currentMazeType === "wilsonsAlgorithm") {
-              mazeAnimator.generateWilsonsAlgorithm();
-            } else if (currentMazeType === "aldousBroderAlgorithm") {
-              mazeAnimator.generatealdousBroderAlgorithm();
+            } else if (currentMazeType === "weightedRecursiveDivision") {
+              mazeAnimator.generatreWeigtedRecursiveDivision(nodeArray[0][0]);
+            } else if (currentMazeType === "weightedRandom") {
+              mazeAnimator.generateWeightedRandom();
             }
           };
         });
